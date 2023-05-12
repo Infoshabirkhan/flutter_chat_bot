@@ -11,7 +11,7 @@ class MyTextField extends StatelessWidget {
 
       padding: EdgeInsets.symmetric(horizontal: 10.sp),
 
-      height: 100.sp,
+      height: 90.sp,
       child: Align(
         alignment: Alignment.bottomCenter,
         child: Container(

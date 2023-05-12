@@ -43,6 +43,7 @@ dependencies:
   flutter_bloc: ^8.1.2
   google_fonts: ^4.0.3
   avatar_glow: ^2.0.2
+  loading_animation_widget: ^1.2.0+4
 
 
 

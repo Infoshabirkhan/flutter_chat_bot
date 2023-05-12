@@ -4,9 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:text_to_speech/models/chat_model.dart';
 
 import '../../app_colors.dart';
-
-var person =
-    'https://st3.depositphotos.com/9998432/13335/v/600/depositphotos_133352010-stock-illustration-default-placeholder-man-and-woman.jpg';
+import '../../repo/logo_urls.dart';
 
 class ChatCard extends StatelessWidget {
   final ChatModel chat;
@@ -44,14 +42,18 @@ class ChatCard extends StatelessWidget {
                 child: Container(
                   height: 30.sp,
                   width: 30.sp,
-                  decoration:  BoxDecoration(
+                  decoration:   BoxDecoration(
 
+                    borderRadius: BorderRadius.circular(4.sp),
+                    image: DecorationImage(image:  chat.isHuman
+                        ? NetworkImage(person)
+                        : NetworkImage(organizationLogo),),
 
                     color: Colors.white,
                   ),
-                  child: chat.isHuman
-                      ? Image.network(person)
-                      : Image.asset('assets/images/chat.jpeg'),
+                  // child: chat.isHuman
+                  //     ? Image.network(person)
+                  //     : Image.network(organizationLogo),
                 ),
               ),
             ),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -11,6 +12,7 @@ import 'package:speech_to_text/speech_to_text.dart';
 import 'package:text_to_speech/controller/chat_cubit.dart';
 import 'package:text_to_speech/controller/chat_list_cubit.dart';
 import 'package:text_to_speech/models/chat_model.dart';
+import 'package:text_to_speech/repo/logo_urls.dart';
 import 'package:text_to_speech/screens/widgets/chat_card.dart';
 import 'package:text_to_speech/screens/widgets/my_text_field.dart';
 
@@ -31,7 +33,6 @@ class _HomeScreenState extends State<HomeScreen> {
   ScrollController scrollController = ScrollController();
 
   SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
   String _lastWords = '';
   stt.SpeechToText speech = stt.SpeechToText();
 
@@ -61,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
 
       await _speechToText.listen(onResult: _onSpeechResult).whenComplete(() {
-        addToList();
+      //  addToList();
       });
 
       setState(() {});
@@ -70,6 +71,15 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  @override
+  void initState() {
+
+    Future.delayed(const Duration(seconds: 1)).then((value) =>{
+    _speak(text: 'Ask me about Monsha\'at\'s support, programs, and initiatives. I\'m here to help!')
+    });
+    // TODO: implement initState
+    super.initState();
+  }
   void _onSpeechResult(result) {
     setState(() {
       _lastWords = result.recognizedWords;
@@ -84,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     print('================== after');
 
-    addToList();    setState(() {});
+    addToList();
 
   }
 
@@ -92,9 +102,30 @@ class _HomeScreenState extends State<HomeScreen> {
 
   bool isListening = false;
 
+  testitn(){
+    var lang = flutterTts.getLanguages;
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(onPressed: () async {
+
+
+            await flutterTts.stop();
+          }, icon: const Icon(CupertinoIcons.speaker,color: Colors.white,))
+        ],
+        backgroundColor: AppColors.primaryColor,
+        centerTitle: true,
+        title: Text('Chatbot', style: GoogleFonts.raleway(
+            color: Colors.white
+        ),),
+
+      ),
+
+
       // extendBody: true,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: AvatarGlow(
@@ -131,17 +162,25 @@ class _HomeScreenState extends State<HomeScreen> {
 
       bottomNavigationBar: BlocBuilder<ChatCubit, ChatState>(
         builder: (context, state) {
+
+
+
           if(state is ChatLoading){
             controller.clear();
-            return Container(
-              height: 80.sp,
-              child: Center(child: Text('typing....', style: GoogleFonts.raleway(
-                color: Colors.white,
-                fontSize: 17.sp,
-                fontWeight: FontWeight.w600
-              ),),
+            return              Container(
+              height: 90.sp,
+              child:  Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  height: 40.sp,
+                  child: LoadingAnimationWidget.stretchedDots(
+
+                    size: 80, color: AppColors.primaryColor,
+                  ),
+                ),
               ),
             );
+
           }else{
             return MyTextField(controller: controller);
 
@@ -150,27 +189,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       backgroundColor: AppColors.blackColor,
 
-      appBar: AppBar(
-        actions: [
-          IconButton(onPressed: () async {
-
-            await flutterTts.stop();
-          }, icon: const Icon(CupertinoIcons.speaker,color: Colors.white,))
-        ],
-        backgroundColor: AppColors.primaryColor,
-        centerTitle: true,
-        title: Text('Personal Assistant', style: GoogleFonts.raleway(
-            color: Colors.white
-        ),),
-
-      ),
       body: BlocBuilder<ChatListCubit, List<ChatModel>>(
         builder: (context, list) {
           return BlocListener<ChatCubit, ChatState>(
 
             listener: (context, state) async {
               if(state is ChatError){
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('I did\'t get please try again',style: GoogleFonts.mulish(
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.errorMessage,style: GoogleFonts.mulish(
                   color: Colors.white
                 ),)));
               }
@@ -180,6 +205,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 tempList.add(
                     ChatModel(message: state.message, isHuman: false));
+
                 context.read<ChatListCubit>().getList(list: tempList);
                 _speak(text: state.message);
                   scrollController.animateTo(scrollController.position.maxScrollExtent, duration: Duration(milliseconds: 400), curve: Curves.easeIn);
@@ -195,15 +221,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
               padding: EdgeInsets.only(top: 8.sp,bottom: 30.sp),
 
-              child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                  controller:scrollController,
+              child: Column(
+                children: [
+                  Expanded(child: Image.network(organizationLogo),),
+                  Expanded(
+                    flex: 6,
+                    child: ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    controller:scrollController,
 
-                itemCount: list.length,
-                itemBuilder: (context, index) {
-                  var chat = list[index];
-                  return ChatCard(chat: chat,);
-                },
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      var chat = list[index];
+                      return ChatCard(chat: chat,);
+                    },
+                  ),),
+                ],
               ),
             ),
           );

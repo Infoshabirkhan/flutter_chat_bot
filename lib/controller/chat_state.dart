@@ -10,4 +10,8 @@ class ChatLoaded extends ChatState {
 
   ChatLoaded({required this.message});
 }
-class ChatError extends ChatState {}
+class ChatError extends ChatState {
+  final String errorMessage;
+
+  ChatError({required this.errorMessage});
+}

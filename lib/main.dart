@@ -6,6 +6,7 @@ import 'package:text_to_speech/screens/home_screen.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'controller/chat_cubit.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -17,26 +18,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      builder: (context, child)=>
-          MultiBlocProvider(
-
-            providers: [
-              BlocProvider(create: (context)=> ChatListCubit([ChatModel(message: 'What was your best trip so far?', isHuman: false)]),),
-              BlocProvider(create: (context)=> ChatCubit(),),
-
-            ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
+      builder: (context, child) => MultiBlocProvider(
+        providers: [
+          //  ============ What was your best trip so far?
+          BlocProvider(
+            create: (context) => ChatListCubit(
+              [
+                ChatModel(
+                  message: 'Ask me about Monsha\'at\'s support, programs, and initiatives. I\'m here to help!',
+                  isHuman: false,
+                )
+              ],
+            ),
+          ),
+          BlocProvider(
+            create: (context) => ChatCubit(),
+          ),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: 'Flutter Demo',
           theme: ThemeData(
-
             useMaterial3: true,
-            colorSchemeSeed : Color(0xff17a380),
+            colorSchemeSeed: const Color(0xff17a380),
           ),
-          home: HomeScreen(),
+          home: const HomeScreen(),
         ),
-    ),
+      ),
     );
   }
 }
-
